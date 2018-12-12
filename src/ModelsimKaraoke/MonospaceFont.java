@@ -18,7 +18,7 @@ public class MonospaceFont {
         int i = 0;
 
         try {
-            FileReader fr = new FileReader("ModelsimKaraoke/charBinaries[7x6]");
+            FileReader fr = new FileReader("ModelsimKaraoke/charBinaries_9");
             BufferedReader reader = new BufferedReader(fr);
             String line;
 
