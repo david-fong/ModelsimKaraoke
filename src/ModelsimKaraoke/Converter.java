@@ -15,7 +15,8 @@ public class Converter {
     private int numSubLines = 2;
     private final int height;
 
-    private int numLines, addrWidthHex, addrWidthBin; // Also number of addresses
+    private int numAddresses, addrWidthHex, addrWidthBin;
+    private int numLines;
     private int charsPerSubLine = 24;
     private final int width;
 
@@ -71,7 +72,7 @@ public class Converter {
 
         int numLines = 0;
         while ((line = reader.readLine()) != null) {
-            if (line.matches("//.*|>>>.*|")) continue;
+            if (line.matches("//.*|>>>.*|\\s*")) continue;
 
             numLines++;
             String[] subLines = line.split("\\s*//\\s*");
@@ -90,8 +91,9 @@ public class Converter {
             this.busLists.add(busList.toString());
         }
         this.numLines = numLines;
+        this.numAddresses = numLines * charsPerSubLine * width;
         int addressWidthHex = 0, i = 1;
-        while (i < numLines) {
+        while (i < numAddresses) {
             addressWidthHex++;
             i *= 16;
         }
@@ -101,6 +103,7 @@ public class Converter {
         // return busLists.get(0).toString().split("\n").length * width;
     }
     private void createMemoryFiles() throws IOException {
+        String format = "@%0" + addrWidthHex + "x ";
 
         for (String busList : busLists) {
             int busListNumber = busLists.indexOf(busList);
@@ -111,14 +114,25 @@ public class Converter {
             String[] charBusLists = busList.split("\n");
             for (String charBusList : charBusLists) {
                 for (String bus : charBusList.split(" ")) {
-                    String format = "@%0" + addrWidthHex + "x ";
                     writer.write(String.format(format, address++) + bus);
                 }
                 writer.newLine();
             } // Write busses from the same character on one line
         }
 
+        FileWriter fr = new FileWriter(filename + "_stop");
+        BufferedWriter writer = new BufferedWriter(fr);
 
+        for (int address = 0; address < numAddresses; address++) {
+            if ((address + 1) % (charsPerSubLine * width) == 0) {
+                writer.write(String.format(format, address) + 1);
+            } else {
+                writer.write(String.format(format, address) + 0);
+            }
+            if ((address + 1) % width == 0) {
+                writer.newLine();
+            }
+        }
     }
 
     private String subLineToBusList(String line) {
