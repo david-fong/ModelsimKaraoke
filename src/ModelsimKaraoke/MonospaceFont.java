@@ -1,3 +1,5 @@
+package ModelsimKaraoke;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -7,7 +9,7 @@ import java.util.HashMap;
  * (counting the small separator)
  */
 public class MonospaceFont {
-    private final static String path = "ModelsimKaraoke/charBinaries_";
+    private final static String path = "fonts/charBinaries_";
 
     private final HashMap<Character, String[]> charBusMap;
 
@@ -30,9 +32,6 @@ public class MonospaceFont {
                             .replaceAll(("0"), ("x"))
                             .replaceAll(("1"), ("0"))
                             .split("\\s+");
-                    for (int i = 0; i < binaries.length; i++) {
-                        binaries[i] = binaries[i].concat("\n");
-                    }
                     charBusMap.put(c, binaries);
                 } else {
                     throw new RuntimeException(filename + "not formatted properly");

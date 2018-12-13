@@ -1,3 +1,5 @@
+package ModelsimKaraoke;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,7 +135,7 @@ public class Converter {
         for (Character c : line.toCharArray()) {
             if (charBusMap.containsKey(c)) {
                 for (String bus : charBusMap.get(c)) {
-                    busList.append(" ").append(bus);
+                    busList.append(bus).append(" ");
                 } // Convert one character to a bus initializer
                 busList.append("\n");
             } else {

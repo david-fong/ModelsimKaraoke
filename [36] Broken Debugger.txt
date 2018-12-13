@@ -1,0 +1,34 @@
+2  // Lines per screen
+24 // Characters per line
+
+>>> VERSE 1 ----------------------------------------------
+Did a bit of me lose	// its way to the bus		//
+Maybe still inside	// the device under test	//
+Could it be that I un-	// aware of its mutability	//
+Left it out in public	// for the bugs?		//
+
+>>> VERSE 2 ----------------------------------------------
+Each unhappy thought	// though I try never catch	//
+Goes ahead to infer	// a home in a latch		//
+If they don't invent	// download RAM then I'll	//
+Have an overflow	// `				//
+Pray that what's still	// cherished won't go		//
+
+>>> DEVELOPMENT ------------------------------------------
+Cycles in trillions	// pass me by and not		//
+A single one acknow-	// ledges the interrupt		//
+That I've raised to	// cycles indifferent		//
+So stand I with you	// together in the sha-		//
+dows looming over us	// that are finals		//
+
+>>> CHORUS 1 ---------------------------------------------
+They tell me follow	// syntax follow style		//
+On a trace curve of	// a deadline and not a		//
+single line compiles	// `				//
+If you could read me	// like a waveform every	//
+Signal would say	// `				//
+Pardon Mr. Duck excuse	// me but what the MUX		//
+Ms. FPGA,		// `				//
+How was I so		// happy yesterday?		//
+
+>>> VERSE 3 ----------------------------------------------
