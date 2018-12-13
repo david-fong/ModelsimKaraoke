@@ -9,32 +9,35 @@ import java.util.HashMap;
  * (counting the small separator)
  */
 public class MonospaceFont {
-    private final HashMap<Character, int[]> charBinaries;
+    private final static String path = "ModelsimKaraoke/charBinaries_";
 
-    MonospaceFont() {
-        charBinaries = new HashMap<>();
-        Character c = null;
-        int[] binaries = new int[6];
-        int i = 0;
+    private final HashMap<Character, String[]> charBusMap;
+
+    MonospaceFont(int height, int width) {
+        String filename = path + height + "x" + width;
+        charBusMap = new HashMap<>();
 
         try {
-            FileReader fr = new FileReader("ModelsimKaraoke/charBinaries_9");
+            FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr);
             String line;
 
-            while (!(line = reader.readLine()).equals("<EOF>")) {
-                if (line.matches("//.*")) continue;
+            while ((line = reader.readLine()) != null) {
+                if (line.matches("\\s*//.*|\\s*")) continue;
 
-                if (line.matches(".")) {
-                    if (c != null) {
-                        charBinaries.put(c, binaries);
-                        binaries = new int[6];
+                if (line.matches(String.format(".(\\s+[01]{%d}){%d}", height, width))) {
+                    char c = line.charAt(0);
+                    String[] binaries = line
+                            .substring(1).trim()
+                            .replaceAll(("0"), ("x"))
+                            .replaceAll(("1"), ("0"))
+                            .split("\\s+");
+                    for (int i = 0; i < binaries.length; i++) {
+                        binaries[i] = binaries[i].concat("\n");
                     }
-                    i = 0;
-                    c = line.charAt(0);
+                    charBusMap.put(c, binaries);
                 } else {
-                    // a binary number
-                    binaries[i++] = Integer.parseInt(line, (0), (8), (2));
+                    throw new RuntimeException(filename + "not formatted properly");
                 }
             }
         } catch (java.io.IOException e) {
@@ -42,8 +45,7 @@ public class MonospaceFont {
         }
     }
 
-    HashMap<Character, int[]> getCharBinaries() {
-        // TODO: some unmodifiable wrapper?
-        return charBinaries;
+    HashMap<Character, String[]> getCharBusMap() {
+        return charBusMap;
     }
 }
