@@ -12,18 +12,17 @@ import java.util.HashMap;
  */
 public class Converter {
     private final HashMap<Character, String[]> charBusMap = new HashMap<>();
-    private final String spaceBusList, modelsimPath = "modelsim/";
+    private final String spaceBusList, msPath = "modelsim/";
 
     private String filename;
     private ArrayList<String> busLists;
 
-    private int numSubLines = 2;
     private final int height;
-
-    private int numAddresses, addrWidthBin;
-    private int numLines;
-    private int charsPerSubLine = 24;
     private final int width;
+    private int numLines;
+    private int charsPerSubLine;
+    private int addrWidthBin;
+    private int numSubLines;
 
     /**
      * Creates a .txt file representing
@@ -50,7 +49,8 @@ public class Converter {
         loadFont();
         textToMemory(filename);
         createMemoryFiles();
-        createVerilogFiles();
+        createVerilogDefinitions();
+        createVerilogTestModule();
     }
 
     /**
@@ -93,7 +93,7 @@ public class Converter {
     private void textToMemory(String filename) {
         FileReader fr = null;
         try {
-            fr = new FileReader(modelsimPath + filename);
+            fr = new FileReader(msPath + filename);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -134,7 +134,6 @@ public class Converter {
             this.busLists.add(busList.toString());
         }
         this.numLines = numLines;
-        this.numAddresses = numLines * charsPerSubLine * width;
         this.addrWidthBin = Integer.highestOneBit(numLines - 1);
     }
 
@@ -144,87 +143,76 @@ public class Converter {
      * File name format: "%s_sl%d.txt"
      */
     private void createMemoryFiles() {
-        FileWriter fr;
-        BufferedWriter writer = null;
+        for (String bl : busLists) {
+            String filename = String.format("_sl%d.", busLists.indexOf(bl));
+            String[] filename_halves = (msPath + this.filename).split("\\.");
+            filename = String.join(filename, filename_halves);
 
-        try {
-            for (String bl : busLists) {
-                String filename_tag = String.format("_sl%d.", busLists.indexOf(bl));
-                String[] filename_halves = (modelsimPath + filename).split("\\.");
-                fr = new FileWriter(String.join(filename_tag, filename_halves));
-                writer = new BufferedWriter(fr);
-
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
                 String[] charBusLists = bl.split("\n");
                 for (String charBl : charBusLists) {
                     writer.write(charBl.trim());
                     writer.newLine();
                 } // Write busses from the same character on one line
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (writer != null) {
-                    writer.close();
-                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void createVerilogFiles() {
+    private void createVerilogDefinitions() {
         final String define = "`define ";
-        String instantiate = "    buslistROM #(\"";
-        instantiate = instantiate.concat(filename + "_sl%d\") buslistROMx%<d(clk);");
 
-        FileWriter fr;
-        BufferedWriter writer = null;
-
+        // Overwrite the definitions file.
+        ArrayList<String> lines = new ArrayList<>();
+        lines.add(define + "CHAR_H " + height);
+        lines.add(define + "CHAR_W " + width);
+        lines.add(define + "LINE_N " + numLines);
+        lines.add(define + "CPSBLN " + charsPerSubLine);
+        lines.add(define + "CHAR_W " + width);
+        lines.add(define + "ADDR_W " + addrWidthBin);
         try {
-            ArrayList<String> lines = new ArrayList<>();
-            lines.add(define + "CHAR_H " + height);
-            lines.add(define + "CHAR_W " + width);
-            lines.add(define + "LINE_N " + numLines);
-            lines.add(define + "CPSBLN " + charsPerSubLine);
-            lines.add(define + "CHAR_W " + width);
-            lines.add(define + "ADDR_W " + addrWidthBin);
-            Files.write(Paths.get(modelsimPath + "definitions.vh"), lines);
-            // Overwrite the definitions file.
-
-            Path path = Paths.get(modelsimPath + "karaoke_format.txt");
-            String karaokeFile = String.join("\n", Files.readAllLines(path));
-            String[] fileHalves = karaokeFile.split("<subline_list>");
-            ArrayList<String> slList = new ArrayList<>();
-            for (int i = 0; i < numSubLines; i++) {
-                slList.add("sl" + i);
-            }
-            karaokeFile = String.join(String.join(", ", slList), fileHalves);
-            // Read the test module's format file and insert signal declaration names.
-
-            fileHalves = karaokeFile.split("<subline_buslist_instantiations>");
-            slList = new ArrayList<>();
-            for (int i = 0; i < numSubLines; i++) {
-                slList.add(String.format(instantiate, i));
-            }
-            karaokeFile = String.join(String.join("\n", slList), fileHalves);
-            // insert buslistROM module instantiation statements.
-
-            fr = new FileWriter(modelsimPath + "karaoke.v");
-            writer = new BufferedWriter(fr);
-            writer.write(karaokeFile);
-
-
+            Files.write(Paths.get(msPath + "definitions.vh"), lines);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+    }
+
+    private void createVerilogTestModule() {
+        String instantiate = "    buslistROM #(\"";
+        instantiate += filename + "_sl%d\") buslistROMx%<d(clk);";
+
+        // Read the format file for the test module.
+        Path path = Paths.get(msPath + "karaoke_format.txt");
+        String karaokeFile = null;
+        try {
+            karaokeFile = String.join("\n", Files.readAllLines(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Insert signal declaration names.
+        String[] fileHalves = karaokeFile.split("<subline_list>");
+        ArrayList<String> slList = new ArrayList<>();
+        for (int i = 0; i < numSubLines; i++) {
+            slList.add("sl" + i);
+        }
+        karaokeFile = String.join(String.join(", ", slList), fileHalves);
+
+        // Insert buslistROM module instantiation statements.
+        fileHalves = karaokeFile.split("<subline_buslist_instantiations>");
+        slList = new ArrayList<>();
+        for (int i = 0; i < numSubLines; i++) {
+            slList.add(String.format(instantiate, i));
+        }
+        karaokeFile = String.join(String.join("\n", slList), fileHalves);
+
+        // Write the result to the output file.
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter(msPath + "karaoke.v"))) {
+            writer.write(karaokeFile);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -274,7 +262,7 @@ public class Converter {
             c = new Converter(filename, height, width);
         } else {
             System.out.println("no valid arguments detected. running example program...");
-            c = new Converter("[36]_Broken_Debugger.txt", 9, 6);
+            c = new Converter("[36]_Broken_Debugger_3sublines.txt", 9, 6);
         }
     }
 }
