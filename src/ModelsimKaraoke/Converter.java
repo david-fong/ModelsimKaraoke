@@ -54,8 +54,7 @@ public class Converter {
 
     /**
      *
-     * @param filename the file containing lyrics
-     * @return number of memory addresses needed
+     * @param filename The file containing lyrics
      */
     private void textToMemory(String filename) throws IOException {
         FileReader fr = new FileReader(filename);
@@ -102,39 +101,40 @@ public class Converter {
 
         // return busLists.get(0).toString().split("\n").length * width;
     }
-    private void createMemoryFiles() throws IOException {
-        String format = "@%0" + addrWidthHex + "x ";
 
-        for (String busList : busLists) {
-            int busListNumber = busLists.indexOf(busList);
-            FileWriter fr = new FileWriter(filename + "_sl" + busListNumber);
+    /**
+     * Creates memory files for each sublist
+     * of strings in bus notation.
+     * @throws IOException
+     */
+    private void createMemoryFiles() throws IOException {
+        //String format = "@%0" + addrWidthHex + "x ";
+
+        for (String bl : busLists) {
+            String filename_tag = String.format("_sl%d.", busLists.indexOf(bl));
+            FileWriter fr = new FileWriter(String.join(filename_tag, filename.split("\\.")));
             BufferedWriter writer = new BufferedWriter(fr);
 
-            int address = 0;
-            String[] charBusLists = busList.split("\n");
-            for (String charBusList : charBusLists) {
-                for (String bus : charBusList.split(" ")) {
-                    writer.write(String.format(format, address++) + bus);
-                }
+            //int address = 0;
+            for (String charBl : bl.split("\n")) {
+                //for (String bus : charBl.split(" ")) {
+                //    //writer.write(String.format(format, address++) + bus);
+                //    writer.write(bus);
+                //}
+                writer.write(charBl.trim());
                 writer.newLine();
             } // Write busses from the same character on one line
         }
-
-        FileWriter fr = new FileWriter(filename + "_stop");
-        BufferedWriter writer = new BufferedWriter(fr);
-
-        for (int address = 0; address < numAddresses; address++) {
-            if ((address + 1) % (charsPerSubLine * width) == 0) {
-                writer.write(String.format(format, address) + 1);
-            } else {
-                writer.write(String.format(format, address) + 0);
-            }
-            if ((address + 1) % width == 0) {
-                writer.newLine();
-            }
-        }
     }
 
+    /**
+     * @param line a string of characters
+     * @return A string of signal bus values
+     * representing columns of letters,
+     * delimited by spaces. Groups of columns
+     * corresponding to one letter are
+     * delimited by new-line characters.
+     */
     private String subLineToBusList(String line) {
         StringBuilder busList = new StringBuilder();
 
