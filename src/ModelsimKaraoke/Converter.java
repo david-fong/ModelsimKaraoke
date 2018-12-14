@@ -4,7 +4,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+/**
+ * See the "[36]_Broken_Debugger.txt" file
+ * for an example of file formatting expected
+ * by this parser.
+ */
 public class Converter {
     private final HashMap<Character, String[]> charBusMap;
     private final String spaceBusList;
@@ -53,7 +57,8 @@ public class Converter {
     }
 
     /**
-     *
+     * Initializes fields for converted bus strings,
+     * and number of lines, width of memory, etc.
      * @param filename The file containing lyrics
      */
     private void textToMemory(String filename) throws IOException {
@@ -75,8 +80,8 @@ public class Converter {
 
             numLines++;
             String[] subLines = line.split("\\s*//\\s*");
-            if (subLines.length != numSubLines) {
-                throw new RuntimeException("number of sub-lines wrong @ " + line);
+            if (subLines.length < numSubLines) {
+                throw new RuntimeException("number of sub-lines too few @ " + line);
             } // Check formatting of line
 
             for (int i = 0; i < numSubLines; i++) {
@@ -107,23 +112,38 @@ public class Converter {
      * of strings in bus notation.
      * @throws IOException
      */
-    private void createMemoryFiles() throws IOException {
+    private void createMemoryFiles() {
         //String format = "@%0" + addrWidthHex + "x ";
+        FileWriter fr;
+        BufferedWriter writer = null;
 
-        for (String bl : busLists) {
-            String filename_tag = String.format("_sl%d.", busLists.indexOf(bl));
-            FileWriter fr = new FileWriter(String.join(filename_tag, filename.split("\\.")));
-            BufferedWriter writer = new BufferedWriter(fr);
+        try {
+            for (String bl : busLists) {
+                String filename_tag = String.format("_sl%d.", busLists.indexOf(bl));
+                fr = new FileWriter(String.join(filename_tag, filename.split("\\.")));
+                writer = new BufferedWriter(fr);
 
-            //int address = 0;
-            for (String charBl : bl.split("\n")) {
-                //for (String bus : charBl.split(" ")) {
-                //    //writer.write(String.format(format, address++) + bus);
-                //    writer.write(bus);
-                //}
-                writer.write(charBl.trim());
-                writer.newLine();
-            } // Write busses from the same character on one line
+                //int address = 0;
+                String[] charBusLists = bl.split("\n");
+                for (String charBl : charBusLists) {
+                    //for (String bus : charBl.split(" ")) {
+                    //    //writer.write(String.format(format, address++) + bus);
+                    //    writer.write(bus);
+                    //}
+                    writer.write(charBl.trim());
+                    writer.newLine();
+                } // Write busses from the same character on one line
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -137,16 +157,21 @@ public class Converter {
      */
     private String subLineToBusList(String line) {
         StringBuilder busList = new StringBuilder();
+        StringBuilder lineBuilder = new StringBuilder();
 
         line = line.trim();
         if (line.length() > charsPerSubLine) {
             line = line.substring(0, charsPerSubLine);
         }
         for (int i = 0; i < (charsPerSubLine - line.length()) / 2; i++) {
-            busList.append(spaceBusList);
+            lineBuilder.append(" ");
         } // Center the line
+        lineBuilder.append(line);
+        while (lineBuilder.length() < charsPerSubLine) {
+            lineBuilder.append(" ");
+        }
 
-        for (Character c : line.toCharArray()) {
+        for (Character c : lineBuilder.toString().toCharArray()) {
             if (charBusMap.containsKey(c)) {
                 for (String bus : charBusMap.get(c)) {
                     busList.append(bus).append(" ");
@@ -157,14 +182,18 @@ public class Converter {
             } // If the character was not in the font use blank.
         } // Convert all characters in the line to bus initializers.
 
-        while (busList.length() / (height + 1) < charsPerSubLine * width) {
-            busList.append(spaceBusList);
-        } // Fill the right half of the line with spaces
-
         return busList.toString();
     }
 
     public static void main(String[] args) {
-        Converter converter = new Converter("[36] Broken Debugger.txt", 9, 6);
+        Converter c;
+        if (String.join(" ", args).matches("[^.]+\\.txt \\d+ \\d+")) {
+            String filename = args[0];
+            int height = Integer.parseInt(args[1]), width = Integer.parseInt(args[2]);
+            c = new Converter(filename, height, width);
+        } else {
+            System.out.println("no valid arguments detected. running example program...");
+            c = new Converter("[36]_Broken_Debugger.txt", 9, 6);
+        }
     }
 }
