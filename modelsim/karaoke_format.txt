@@ -1,0 +1,23 @@
+`include "definitions.vh"
+
+module karaoke();
+    reg  clk, rst;
+    wire [`CHAR_H-1:0] <subline_list>;
+
+<subline_buslist_instantiations>
+
+    initial forever begin
+        repeat (`CPLINE*`CHAR_W-1) begin
+            clk = 1; #5;
+            clk = 0; #5;
+        end
+        $stop;
+        clk = 1; #5;
+        clk = 0; #5;
+    end
+
+    initial begin
+        #31680;
+        $stop;
+    end
+endmodule

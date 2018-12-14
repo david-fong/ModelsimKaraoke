@@ -1,6 +1,7 @@
-package ModelsimKaraoke;
-
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,8 +11,8 @@ import java.util.HashMap;
  * by this parser.
  */
 public class Converter {
-    private final HashMap<Character, String[]> charBusMap;
-    private final String spaceBusList;
+    private final HashMap<Character, String[]> charBusMap = new HashMap<>();
+    private final String spaceBusList, modelsimPath = "modelsim/";
 
     private String filename;
     private ArrayList<String> busLists;
@@ -19,7 +20,7 @@ public class Converter {
     private int numSubLines = 2;
     private final int height;
 
-    private int numAddresses, addrWidthHex, addrWidthBin;
+    private int numAddresses, addrWidthBin;
     private int numLines;
     private int charsPerSubLine = 24;
     private final int width;
@@ -46,7 +47,7 @@ public class Converter {
         this.spaceBusList = spaceBuilder.append("\n").toString();
         // Initialize the "space/substitute-unrecognizable" character.
 
-        charBusMap = new MonospaceFont(height, width).getCharBusMap();
+        loadFont();
 
         try {
             textToMemory(filename);
@@ -57,12 +58,44 @@ public class Converter {
     }
 
     /**
+     * Expects that the specified font exists.
+     */
+    private void loadFont() {
+        final String path = "fonts/charBinaries_";
+        String filename = path + height + "x" + width;
+
+        try {
+            FileReader fr = new FileReader(filename);
+            BufferedReader reader = new BufferedReader(fr);
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (line.matches("\\s*//.*|\\s*")) continue;
+
+                if (line.matches(String.format(".(\\s+[01]{%d}){%d}", height, width))) {
+                    char c = line.charAt(0);
+                    String[] binaries = line
+                            .substring(1).trim()
+                            .replaceAll(("0"), ("x"))
+                            .replaceAll(("1"), ("0"))
+                            .split("\\s+");
+                    charBusMap.put(c, binaries);
+                } else {
+                    throw new RuntimeException(filename + "not formatted properly");
+                }
+            }
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Initializes fields for converted bus strings,
      * and number of lines, width of memory, etc.
      * @param filename The file containing lyrics
      */
     private void textToMemory(String filename) throws IOException {
-        FileReader fr = new FileReader(filename);
+        FileReader fr = new FileReader(modelsimPath + filename);
         BufferedReader reader = new BufferedReader(fr);
         String line;
 
@@ -96,44 +129,84 @@ public class Converter {
         }
         this.numLines = numLines;
         this.numAddresses = numLines * charsPerSubLine * width;
-        int addressWidthHex = 0, i = 1;
-        while (i < numAddresses) {
-            addressWidthHex++;
-            i *= 16;
-        }
-        this.addrWidthHex = addressWidthHex;
         this.addrWidthBin = Integer.highestOneBit(numLines - 1);
-
-        // return busLists.get(0).toString().split("\n").length * width;
     }
 
     /**
      * Creates memory files for each sublist
      * of strings in bus notation.
-     * @throws IOException
+     * File name format: "%s_sl%d.txt"
      */
     private void createMemoryFiles() {
-        //String format = "@%0" + addrWidthHex + "x ";
         FileWriter fr;
         BufferedWriter writer = null;
 
         try {
             for (String bl : busLists) {
                 String filename_tag = String.format("_sl%d.", busLists.indexOf(bl));
-                fr = new FileWriter(String.join(filename_tag, filename.split("\\.")));
+                String[] filename_halves = (modelsimPath + filename).split("\\.");
+                fr = new FileWriter(String.join(filename_tag, filename_halves));
                 writer = new BufferedWriter(fr);
 
-                //int address = 0;
                 String[] charBusLists = bl.split("\n");
                 for (String charBl : charBusLists) {
-                    //for (String bus : charBl.split(" ")) {
-                    //    //writer.write(String.format(format, address++) + bus);
-                    //    writer.write(bus);
-                    //}
                     writer.write(charBl.trim());
                     writer.newLine();
                 } // Write busses from the same character on one line
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void createVerilogFiles() {
+        final String define = "`define ";
+        String instantiate = "    sublistROM #(\"";
+        instantiate = instantiate.concat(filename + "_sl%d\") buslistROMx%<d(clk);");
+
+        FileWriter fr;
+        BufferedWriter writer = null;
+
+        try {
+            ArrayList<String> lines = new ArrayList<>();
+            lines.add(define + "CHAR_H " + height);
+            lines.add(define + "CHAR_W " + width);
+            lines.add(define + "CHAR_N " + numLines * charsPerSubLine);
+            lines.add(define + "ADDR_W " + addrWidthBin);
+            Files.write(Paths.get(modelsimPath + "definitions.vh"), lines);
+            // Overwrite the definitions file.
+
+            Path path = Paths.get(modelsimPath + "karaoke_format.txt");
+            String karaokeFile = String.join("\n", Files.readAllLines(path));
+            String[] fileHalves = karaokeFile.split("<subline_list>");
+            ArrayList<String> slList = new ArrayList<>();
+            for (int i = 0; i < numSubLines; i++) {
+                slList.add("sl" + i);
+            }
+            karaokeFile = String.join(String.join(", ", slList), fileHalves);
+            // Read the test module's format file and insert signal declaration names.
+
+            fileHalves = karaokeFile.split("<subline_buslist_instantiations>");
+            slList = new ArrayList<>();
+            for (int i = 0; i < numSubLines; i++) {
+                slList.add(String.format(instantiate, i));
+            }
+            karaokeFile = String.join(String.join("\n", slList), fileHalves);
+            // insert buslistROM module instantiation statements.
+
+            fr = new FileWriter(modelsimPath + "karaoke.v");
+            writer = new BufferedWriter(fr);
+            writer.write(karaokeFile);
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -169,7 +242,7 @@ public class Converter {
         lineBuilder.append(line);
         while (lineBuilder.length() < charsPerSubLine) {
             lineBuilder.append(" ");
-        }
+        } // Fills the other end of the line with spaces
 
         for (Character c : lineBuilder.toString().toCharArray()) {
             if (charBusMap.containsKey(c)) {
