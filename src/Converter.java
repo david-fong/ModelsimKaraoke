@@ -48,13 +48,9 @@ public class Converter {
         // Initialize the "space/substitute-unrecognizable" character.
 
         loadFont();
-
-        try {
-            textToMemory(filename);
-            createMemoryFiles();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        textToMemory(filename);
+        createMemoryFiles();
+        createVerilogFiles();
     }
 
     /**
@@ -94,34 +90,44 @@ public class Converter {
      * and number of lines, width of memory, etc.
      * @param filename The file containing lyrics
      */
-    private void textToMemory(String filename) throws IOException {
-        FileReader fr = new FileReader(modelsimPath + filename);
+    private void textToMemory(String filename) {
+        FileReader fr = null;
+        try {
+            fr = new FileReader(modelsimPath + filename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         BufferedReader reader = new BufferedReader(fr);
         String line;
 
-        numSubLines     = Integer.parseInt(reader.readLine().split("\\s+")[0]);
-        charsPerSubLine = Integer.parseInt(reader.readLine().split("\\s+")[0]);
-
         ArrayList<StringBuilder> busLists = new ArrayList<>();
-        for (int i = 0; i < numSubLines; i++) {
-            busLists.add(new StringBuilder());
-        } // Create a StringBuilder for each line
-
         int numLines = 0;
-        while ((line = reader.readLine()) != null) {
-            if (line.matches("//.*|>>>.*|\\s*")) continue;
-
-            numLines++;
-            String[] subLines = line.split("\\s*//\\s*");
-            if (subLines.length < numSubLines) {
-                throw new RuntimeException("number of sub-lines too few @ " + line);
-            } // Check formatting of line
+        try {
+            numSubLines     = Integer.parseInt(reader.readLine().split("\\s+")[0]);
+            charsPerSubLine = Integer.parseInt(reader.readLine().split("\\s+")[0]);
 
             for (int i = 0; i < numSubLines; i++) {
-                String bl = subLineToBusList(subLines[i]);
-                busLists.get(i).append(bl);
-            }
-        } // parse each line of sub-lines in the lyrics file
+                busLists.add(new StringBuilder());
+            } // Create a StringBuilder for each line
+
+            while ((line = reader.readLine()) != null) {
+                if (line.matches("//.*|>>>.*|\\s*")) continue;
+
+                numLines++;
+                String[] subLines = line.split("\\s*//\\s*");
+                if (subLines.length < numSubLines) {
+                    throw new RuntimeException("number of sub-lines too few @ " + line);
+                } // Check formatting of line that enough sublines exist.
+
+                for (int i = 0; i < numSubLines; i++) {
+                    String bl = subLineToBusList(subLines[i]);
+                    busLists.get(i).append(bl);
+                }
+            } // parse each line of sub-lines in the lyrics file
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.busLists = new ArrayList<>();
         for (StringBuilder busList : busLists) {
@@ -179,7 +185,9 @@ public class Converter {
             ArrayList<String> lines = new ArrayList<>();
             lines.add(define + "CHAR_H " + height);
             lines.add(define + "CHAR_W " + width);
-            lines.add(define + "CHAR_N " + numLines * charsPerSubLine);
+            lines.add(define + "LINE_N " + numLines);
+            lines.add(define + "CPSBLN " + charsPerSubLine);
+            lines.add(define + "CHAR_W " + width);
             lines.add(define + "ADDR_W " + addrWidthBin);
             Files.write(Paths.get(modelsimPath + "definitions.vh"), lines);
             // Overwrite the definitions file.
@@ -247,7 +255,7 @@ public class Converter {
         for (Character c : lineBuilder.toString().toCharArray()) {
             if (charBusMap.containsKey(c)) {
                 for (String bus : charBusMap.get(c)) {
-                    busList.append(bus).append(" ");
+                    busList.append(new StringBuilder(bus).reverse()).append(" ");
                 } // Convert one character to a bus initializer
                 busList.append("\n");
             } else {
