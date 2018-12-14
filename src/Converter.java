@@ -175,7 +175,7 @@ public class Converter {
 
     private void createVerilogFiles() {
         final String define = "`define ";
-        String instantiate = "    sublistROM #(\"";
+        String instantiate = "    buslistROM #(\"";
         instantiate = instantiate.concat(filename + "_sl%d\") buslistROMx%<d(clk);");
 
         FileWriter fr;

@@ -32,3 +32,25 @@ Ms. FPGA,               // `                        // 20
 How was I so            // happy yesterday?         // 21
 
 >>> VERSE 3 ----------------------------------------------
+
+
+>>> DEVELOPMENT 2 ----------------------------------------
+Midterms uncountable pass by as if
+the first set up a base case and the
+Rest implied an induction
+Midterms indifferent so stand I
+with you together in these shadows
+looming over us that are finals
+
+>>> CHORUS
+They tell me write a    // lexer, grammar, parser   //
+But the regular         // expression to my         //
+will to live            // matched null             //
+I watch in envy as      // my tokens stream         //
+into the abyss          // `                        //
+While I doubtful try    // to load a smile and      //
+get cache miss          // `                        //
+
+........................// ........................
+They ask for formal     // proof and then for       //
+rhetoric                // `

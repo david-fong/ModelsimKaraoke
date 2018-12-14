@@ -1,0 +1,65 @@
+3   // NUMBER OF SUB-LINES
+21  // CHARACTERS PER SUB-LINE
+
+>>> V1 -------------------------------------------------------------------
+Did a bit of me         //lose its way          //to the bus?           //
+Maybe still             //inside the device     //under test            //
+Could it be that        //I- unaware of its     //mutability-           //
+Left it out             //in public for         //the bugs?             //
+
+>>> V2 -------------------------------------------------------------------
+Each unhappy thought-   //though I try-         //never catch           //
+Goes ahead              //to infer a home       //in a latch            //
+If they don't invent    //"download RAM" then   //I'll have an overflow //
+Pray that what's        //still cherished       //won't- go             //
+
+>>> D1 -------------------------------------------------------------------
+Cycles in               //trillions             //pass me by            //
+And not a               //single one            //acknowledges          //
+the interrupt           //that I've             //raised to             //
+Cycles                  //indifferent           //so stand I            //
+with you                //together in           //these shadows         //
+Looming over us         //that are finals       //``                    //
+
+>>> C1 -------------------------------------------------------------------
+They ask for            //formal proof and      //then for rhetoric     //
+And spin a tale         //of sentiment          //in metric             //
+I don't want            //addresses or          //hash-codes,           //
+I want                  //cause and             //effect.               //
+Calculate me this–      //where did I lose      //happiness?            //
+
+>>> C2 -------------------------------------------------------------------
+They tell me            //"follow syntax"       //"follow style"        //
+On a trace-curve of a   //deadline and not a    //single line compiles! //
+If you could read me    //like a waveform every //signal would say:     //
+Pardon, mister duck,    //excuse me but         //what the MUX?         //
+Miss FPGA,              //how was I so          //happy yesterday?      //
+
+
+
+>>> V3 -------------------------------------------------------------------
+Hangs on me an          //aura of duplicate     //stench                //
+Could it be             //because all my        //classes extend        //
+Java thread and whim-   //sically synchronize   //sharing me to lock    //
+Teaching me,            //the hard way,         //Amdahl's Law.         //
+
+>>> D2 -------------------------------------------------------------------
+Midterms                //uncountable           //pass by               //
+As if the               //first set up          //a base case           //
+and the rest            //implied an            //induction             //
+Midterms                //indifferent           //so stand I            //
+with you                //together in           //these shadows         //
+Looming over            //us that are           //finals                //
+
+>>> C3 -------------------------------------------------------------------
+They tell me            //"write a lexer,       //grammar, parser"      //
+But the regular         //expression to my will //to live matched null  //
+I watch in envy         //as my tokens stream   //into the abyss        //
+While I doubtful try    //to load a smile and   //just cache miss       //
+
+>>> C4 -------------------------------------------------------------------
+They tell me            //"speak in methods"    //"speak in modules"    //
+Take me for a system    //'cause they're slowly //breaking me down      //
+They didn't give me     //a reposit'ry for      //version control       //
+When did I regress?     //How did I lose        //happiness?            //
+Where did I go wrong?   //Or was I just un-     //happy all along?      //
