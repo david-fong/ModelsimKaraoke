@@ -179,9 +179,6 @@ public class Converter {
     }
 
     private void createVerilogTestModule() {
-        String instantiate = "    buslistROM #(\"";
-        instantiate += filename + "_sl%d\") buslistROMx%<d(clk);";
-
         // Read the format file for the test module.
         Path path = Paths.get(msPath + "karaoke_format.txt");
         String karaokeFile = null;
@@ -192,18 +189,22 @@ public class Converter {
         }
 
         // Insert signal declaration names.
-        String[] fileHalves = karaokeFile.split("<subline_list>");
+        String signalFormat = "sl%d";
+        String[] fileHalves = karaokeFile.split("<subline_signals>");
         ArrayList<String> slList = new ArrayList<>();
         for (int i = 0; i < numSubLines; i++) {
-            slList.add("sl" + i);
+            slList.add(String.format(signalFormat, i));
         }
         karaokeFile = String.join(String.join(", ", slList), fileHalves);
 
         // Insert buslistROM module instantiation statements.
-        fileHalves = karaokeFile.split("<subline_buslist_instantiations>");
+        String instantiateFormat = "    buslistROM #(\"" +
+                String.join("_sl%d.", this.filename.split("\\.")) +
+                "\") blROMx%<d(clk, sl%<d);";
+        fileHalves = karaokeFile.split("<buslistROM_instantiations>");
         slList = new ArrayList<>();
         for (int i = 0; i < numSubLines; i++) {
-            slList.add(String.format(instantiate, i));
+            slList.add(String.format(instantiateFormat, i));
         }
         karaokeFile = String.join(String.join("\n", slList), fileHalves);
 

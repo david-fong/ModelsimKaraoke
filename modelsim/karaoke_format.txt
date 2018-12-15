@@ -2,9 +2,9 @@
 
 module karaoke();
     reg  clk, rst;
-    wire [`CHAR_H-1:0] <subline_list>;
+    wire [`CHAR_H-1:0] <subline_signals>;
 
-<subline_buslist_instantiations>
+<buslistROM_instantiations>
 
     initial forever begin
         repeat (`CPSBLN*`CHAR_W-1) begin
