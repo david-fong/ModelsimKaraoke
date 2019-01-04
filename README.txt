@@ -1,3 +1,5 @@
+EXAMPLE: https://www.youtube.com/watch?v=jKpDQr-2eWM
+
 To use this program:
     1. Create a formatted text file (See I).
 
