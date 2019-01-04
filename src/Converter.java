@@ -241,6 +241,9 @@ public class Converter {
             lineBuilder.append(" ");
         } // Fills the other end of the line with spaces
 
+        busList.append(spaceBusList);
+        // Add a space so full lines look separate.
+
         for (Character c : lineBuilder.toString().toCharArray()) {
             if (charBusMap.containsKey(c)) {
                 for (String bus : charBusMap.get(c)) {

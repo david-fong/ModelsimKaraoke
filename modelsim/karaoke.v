@@ -9,13 +9,11 @@ module karaoke();
     buslistROM #("[36]_Broken_Debugger_3sublines_sl2.txt") blROMx2(clk, sl2);
 
     initial forever begin
-        repeat (`CPSBLN*`CHAR_W-1) begin
+        repeat ((`CPSBLN+1)*`CHAR_W) begin
             clk = 1; #5;
             clk = 0; #5;
         end
         $stop;
-        clk = 1; #5;
-        clk = 0; #5;
     end
 
     initial begin

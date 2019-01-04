@@ -7,13 +7,11 @@ module karaoke();
 <buslistROM_instantiations>
 
     initial forever begin
-        repeat (`CPSBLN*`CHAR_W-1) begin
+        repeat ((`CPSBLN+1)*`CHAR_W) begin
             clk = 1; #5;
             clk = 0; #5;
         end
         $stop;
-        clk = 1; #5;
-        clk = 0; #5;
     end
 
     initial begin

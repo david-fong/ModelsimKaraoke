@@ -35,7 +35,8 @@ If you could read me    //like a waveform every //signal would say:     //
 Pardon, mister duck,    //excuse me but         //what the MUX?         //
 Miss FPGA,              //how was I so          //happy yesterday?      //
 
-
+>>> M --------------------------------------------------------------------
+``                      //`                     //`                     //
 
 >>> V3 -------------------------------------------------------------------
 Hangs on me an          //aura of duplicate     //stench                //
@@ -60,6 +61,12 @@ While I doubtful try    //to load a smile and   //just cache miss       //
 >>> C4 -------------------------------------------------------------------
 They tell me            //"speak in methods"    //"speak in modules"    //
 Take me for a system    //'cause they're slowly //breaking me down      //
-They didn't give me     //a reposit'ry for      //version control       //
+They didn't give me     //a repository for      //version control       //
+
+Calculate me this–      //where did I lose      //happiness?            //
+Pardon, mister duck,    //excuse me but         //what the MUX?         //
+Miss FPGA,              //how was I so          //happy yesterday?      //
+While I doubtful try    //to load a smile and   //just cache miss       //
 When did I regress?     //How did I lose        //happiness?            //
-Where did I go wrong?   //Or was I just un-     //happy all along?      //
+Where did I go wrong?   //Or was I just un-     //happy all-            //
+``                      //along?                //`                     //
