@@ -15,8 +15,8 @@ To use this program:
        > buslistROM.v
        > karaoke.v
 
-    4. Start a simulation of the karaoke.v file.
-       add each top-level signal named "sl<#>" to
+    4. Open Modelsim and start a simulation of "karaoke".
+       Add each top-level signal named "sl<#>" to
        the waveform viewer, expand them, and format
        each bit signal as a literal value. (NOTE:
        Modelsim is not consistent with the order of
