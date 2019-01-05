@@ -1,56 +1,72 @@
-2  // Lines per screen
-24 // Characters per line
+3   // NUMBER OF SUB-LINES
+21  // CHARACTERS PER SUB-LINE
 
->>> VERSE 1 ----------------------------------------------
-Did a bit of me lose    // its way to the bus       // 0
-Maybe still inside      // the device under test    // 1
-Could it be that I un-  // aware of its mutability  // 2
-Left it out in public   // for the bugs?            // 3
+>>> V1 -------------------------------------------------------------------
+Did a bit of me         //lose its way          //to the bus?           //
+Maybe still             //inside the device     //under test            //
+Could it be that        //I- unaware of its     //mutability-           //
+Left it out             //in public for         //the bugs?             //
 
->>> VERSE 2 ----------------------------------------------
-Each unhappy thought    // though I try never catch // 4
-Goes ahead to infer     // a home in a latch        // 5
-If they don't invent    // download RAM then I'll   // 6
-Have an overflow        // `                        // 7
-Pray that what's still  // cherished won't go       // 8
+>>> V2 -------------------------------------------------------------------
+Each unhappy thought-   //though I try-         //never catch           //
+Goes ahead              //to infer a home       //in a latch            //
+If they don't invent    //"download RAM" then   //I'll have an overflow //
+Pray that what's        //still cherished       //won't- go             //
 
->>> DEVELOPMENT ------------------------------------------
-Cycles in trillions     // pass me by and not       // 9
-A single one acknow-    // ledges the interrupt     // 10
-That I've raised to     // cycles indifferent       // 11
-So stand I with you     // together in the sha-     // 12
-dows looming over us    // that are finals          // 13
+>>> D1 -------------------------------------------------------------------
+Cycles in               //trillions             //pass me by            //
+And not a               //single one            //acknowledges          //
+the interrupt           //that I've             //raised to             //
+Cycles                  //indifferent           //so stand I            //
+with you                //together in           //these shadows         //
+Looming over us         //that are finals       //``                    //
 
->>> CHORUS 1 ---------------------------------------------
-They tell me follow     // syntax follow style      // 14
-On a trace curve of     // a deadline and not a     // 15
-single line compiles    // `                        // 16
-If you could read me    // like a waveform every    // 17
-Signal would say        // `                        // 18
-Pardon Mr. Duck excuse  // me but what the MUX      // 19
-Ms. FPGA,               // `                        // 20
-How was I so            // happy yesterday?         // 21
+>>> C1 -------------------------------------------------------------------
+They ask for            //formal proof and      //then for rhetoric     //
+And spin a tale         //of sentiment          //in metric             //
+I don't want            //addresses or          //hash-codes,           //
+I want                  //cause and             //effect.               //
+Calculate me this–      //where did I lose      //happiness?            //
 
->>> VERSE 3 ----------------------------------------------
+>>> C2 -------------------------------------------------------------------
+They tell me            //"follow syntax"       //"follow style"        //
+On a trace-curve of a   //deadline and not a    //single line compiles! //
+If you could read me    //like a waveform every //signal would say:     //
+Pardon, mister duck,    //excuse me but         //what the MUX?         //
+Miss FPGA,              //how was I so          //happy yesterday?      //
 
+>>> M --------------------------------------------------------------------
+``                      //`                     //`                     //
 
->>> DEVELOPMENT 2 ----------------------------------------
-Midterms uncountable pass by as if
-the first set up a base case and the
-Rest implied an induction
-Midterms indifferent so stand I
-with you together in these shadows
-looming over us that are finals
+>>> V3 -------------------------------------------------------------------
+Hangs on me an          //aura of duplicate     //stench                //
+Could it be             //because all my        //classes extend        //
+Java thread and whim-   //sically synchronize   //sharing me to lock    //
+Teaching me,            //the hard way,         //Amdahl's Law.         //
 
->>> CHORUS
-They tell me write a    // lexer, grammar, parser   //
-But the regular         // expression to my         //
-will to live            // matched null             //
-I watch in envy as      // my tokens stream         //
-into the abyss          // `                        //
-While I doubtful try    // to load a smile and      //
-get cache miss          // `                        //
+>>> D2 -------------------------------------------------------------------
+Midterms                //uncountable           //pass by               //
+As if the               //first set up          //a base case           //
+and the rest            //implied an            //induction             //
+Midterms                //indifferent           //so stand I            //
+with you                //together in           //these shadows         //
+Looming over            //us that are           //finals                //
 
-........................// ........................
-They ask for formal     // proof and then for       //
-rhetoric                // `
+>>> C3 -------------------------------------------------------------------
+They tell me            //"write a lexer,       //grammar, parser"      //
+But the regular         //expression to my will //to live matched null  //
+I watch in envy         //as my tokens stream   //into the abyss        //
+While I doubtful try    //to load a smile and   //just cache miss       //
+
+>>> C4 -------------------------------------------------------------------
+They tell me            //"speak in methods"    //"speak in modules"    //
+Take me for a system    //'cause they're slowly //breaking me down      //
+They didn't give me     //a repository for      //version control       //
+
+Calculate me this–      //where did I lose      //happiness?            //
+Pardon, mister duck,    //excuse me but         //what the MUX?         //
+Miss FPGA,              //how was I so          //happy yesterday?      //
+While I doubtful try    //to load a smile and   //just cache miss       //
+When did I regress?     //How did I lose        //happiness?            //
+Where did I go wrong?   //Or was I just un-     //happy all-            //
+``                      //along?                //`                     //

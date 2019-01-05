@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * Parses a lightly formatted text file containing
+ * lyrics and produces Verilog files to display the
+ * lyrics in Modelsim Altera's waveform viewer.
+ *
  * See the "[36]_Broken_Debugger.txt" file
- * for an example of file formatting expected
- * by this parser.
+ * for an example of lyrics file formatting
+ * expected by this parser.
  */
 public class Converter {
     private final HashMap<Character, String[]> charBusMap = new HashMap<>();
@@ -54,7 +58,9 @@ public class Converter {
     }
 
     /**
+     * Font file-names follow "charBinaries_%dx%d"
      * Expects that the specified font exists.
+     * Parses the font into a Hash-map.
      */
     private void loadFont() {
         final String path = "fonts/charBinaries_";
@@ -81,6 +87,7 @@ public class Converter {
                 }
             }
         } catch (java.io.IOException e) {
+            System.out.println("error reading from specified font file.");
             e.printStackTrace();
         }
     }
@@ -98,6 +105,7 @@ public class Converter {
             e.printStackTrace();
         }
 
+        assert fr != null;
         BufferedReader reader = new BufferedReader(fr);
         String line;
 
@@ -109,30 +117,37 @@ public class Converter {
 
             for (int i = 0; i < numSubLines; i++) {
                 busLists.add(new StringBuilder());
-            } // Create a StringBuilder for each line
+            } // Create a StringBuilder for each sub-line
 
+            // Read all lines of sub-lines
             while ((line = reader.readLine()) != null) {
                 if (line.matches("//.*|>>>.*|\\s*")) continue;
 
                 numLines++;
+                // Split the line into sublines.
                 String[] subLines = line.split("\\s*//\\s*");
                 if (subLines.length < numSubLines) {
                     throw new RuntimeException("number of sub-lines too few @ " + line);
                 } // Check formatting of line that enough sublines exist.
 
                 for (int i = 0; i < numSubLines; i++) {
+                    // Convert the subline to signal bus format.
                     String bl = subLineToBusList(subLines[i]);
+                    // Group it with its subline stringBuilder.
                     busLists.get(i).append(bl);
                 }
-            } // parse each line of sub-lines in the lyrics file
+            }
         } catch (IOException e) {
+            System.out.println("error reading a line from the lyrics file.");
             e.printStackTrace();
         }
 
+        // save the bus-list data to an object-field to write to memory files.
         this.busLists = new ArrayList<>();
         for (StringBuilder busList : busLists) {
             this.busLists.add(busList.toString());
         }
+        // get some data used later in Verilog `define statements.
         this.numLines = numLines;
         this.addrWidthBin = Integer.highestOneBit(numLines - 1);
     }
@@ -143,12 +158,15 @@ public class Converter {
      * File name format: "%s_sl%d.txt"
      */
     private void createMemoryFiles() {
+        // Go through each sub-line.
         for (String bl : busLists) {
             String filename = String.format("_sl%d.", busLists.indexOf(bl));
             String[] filename_halves = (msPath + this.filename).split("\\.");
+            // make memory-file name the lyrics filename tagged with "_sl#".
             filename = String.join(filename, filename_halves);
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+                // Split into groups of characters.
                 String[] charBusLists = bl.split("\n");
                 for (String charBl : charBusLists) {
                     writer.write(charBl.trim());
@@ -160,6 +178,11 @@ public class Converter {
         }
     }
 
+    /**
+     * Create a .vh file of define statements
+     * used by the karaoke.v and buslistROM.v
+     * files.
+     */
     private void createVerilogDefinitions() {
         final String define = "`define ";
 
@@ -174,10 +197,17 @@ public class Converter {
         try {
             Files.write(Paths.get(msPath + "definitions.vh"), lines);
         } catch (IOException e) {
+            System.out.println("unable to write to the definitions file.");
             e.printStackTrace();
         }
     }
 
+    /**
+     * Produces a file named karaoke.v with
+     * signal declarations for each subline,
+     * and module instantiations of the
+     * buslistROM module for each signal.
+     */
     private void createVerilogTestModule() {
         // Read the format file for the test module.
         Path path = Paths.get(msPath + "karaoke_format.txt");
@@ -190,6 +220,7 @@ public class Converter {
 
         // Insert signal declaration names.
         String signalFormat = "sl%d";
+        assert karaokeFile != null;
         String[] fileHalves = karaokeFile.split("<subline_signals>");
         ArrayList<String> slList = new ArrayList<>();
         for (int i = 0; i < numSubLines; i++) {
@@ -220,10 +251,10 @@ public class Converter {
     /**
      * @param line a string of characters
      * @return A string of signal bus values
-     * representing columns of letters,
-     * delimited by spaces. Groups of columns
-     * corresponding to one letter are
-     * delimited by new-line characters.
+     *         representing columns of letters,
+     *         delimited by spaces. Groups of columns
+     *         corresponding to one letter are
+     *         delimited by new-line characters.
      */
     private String subLineToBusList(String line) {
         StringBuilder busList = new StringBuilder();
@@ -258,15 +289,23 @@ public class Converter {
         return busList.toString();
     }
 
+    /**
+     * Runs the Converter class on a
+     * specified text file and font.
+     * @param args The first word is the filename
+     *             with the .txt extension. The second
+     *             is the character height in pixels,
+     *             and the third is the character width
+     *             also in pixels.
+     */
     public static void main(String[] args) {
-        Converter c;
         if (String.join(" ", args).matches("[^.]+\\.txt \\d+ \\d+")) {
             String filename = args[0];
             int height = Integer.parseInt(args[1]), width = Integer.parseInt(args[2]);
-            c = new Converter(filename, height, width);
+            new Converter(filename, height, width);
         } else {
             System.out.println("no valid arguments detected. running example program...");
-            c = new Converter("[36]_Broken_Debugger_3sublines.txt", 9, 6);
+            new Converter("[36]_Broken_Debugger.txt", 9, 6);
         }
     }
 }
